@@ -5,8 +5,6 @@ This repository now contains a production-oriented project skeleton for the tech
 - modular Python package under `src/freqdict_project/`;
 - configurable settings (`config/settings.yaml`);
 - core linguistic rules implemented as reusable functions;
-- Stage 1 pipeline implementation for metadata loading/filtering;
-- metadata CSV loader supports common delimiters (`,`, `;`, `\t`) and header normalization to lowercase.
 - baseline unit tests for acceptance-critical calculations.
 
 ## Quick start
