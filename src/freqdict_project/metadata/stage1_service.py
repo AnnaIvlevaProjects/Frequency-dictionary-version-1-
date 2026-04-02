@@ -54,24 +54,15 @@ def add_style_3(rows: list[dict[str, object]]) -> list[dict[str, object]]:
     return with_style
 
 
-def _resolve_xml_path(root: Path, rel_path: str) -> Path:
-    base = root / rel_path
-    candidates = [base, Path(f"{base}.xml"), Path(f"{base}.xml.gz")]
-    for candidate in candidates:
-        if candidate.exists():
-            return candidate
-    return base
-
-
 def add_xml_paths(rows: list[dict[str, object]], corpus_root: str | Path) -> list[dict[str, object]]:
     root = Path(corpus_root)
     output: list[dict[str, object]] = []
     for row in rows:
         rel_path = str(row.get("path", "")).replace("\\", "/").strip("/")
-        resolved = _resolve_xml_path(root, rel_path) if rel_path else root
+        abs_path = root / rel_path
         updated = dict(row)
-        updated["xml_abs_path"] = str(resolved)
-        updated["xml_exists"] = rel_path != "" and resolved.exists()
+        updated["xml_abs_path"] = str(abs_path)
+        updated["xml_exists"] = abs_path.exists()
         updated["is_empty_path"] = rel_path == ""
         output.append(updated)
     return output

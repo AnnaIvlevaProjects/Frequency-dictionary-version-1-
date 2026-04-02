@@ -16,45 +16,12 @@ REQUIRED_COLUMNS = {
 }
 
 
-def _open_with_fallback(path: Path) -> tuple[str, str]:
-    last_error: UnicodeDecodeError | None = None
-    for encoding in ("utf-8-sig", "utf-8", "cp1251"):
-        try:
-            return path.read_text(encoding=encoding), encoding
-        except UnicodeDecodeError as exc:
-            last_error = exc
-    if last_error:
-        raise last_error
-    raise RuntimeError("Failed to read metadata CSV")
-
-
-def _detect_dialect(sample: str) -> csv.Dialect:
-    try:
-        return csv.Sniffer().sniff(sample, delimiters=",;\t")
-    except csv.Error:
-        class _Fallback(csv.Dialect):
-            delimiter = ","
-            quotechar = '"'
-            doublequote = True
-            skipinitialspace = False
-            lineterminator = "\n"
-            quoting = csv.QUOTE_MINIMAL
-
-        return _Fallback
-
-
-def load_metadata_csv(metadata_csv: str | Path) -> tuple[list[dict[str, str]], list[str]]:
+def load_metadata_csv(metadata_csv: str | Path, encoding: str = "utf-8") -> tuple[list[dict[str, str]], list[str]]:
     path = Path(metadata_csv)
-    content, _ = _open_with_fallback(path)
-    sample = content[:4096] or "path,created,publ_year,sphere,style,medium,subcorpus\n"
-    dialect = _detect_dialect(sample)
-
-    reader = csv.DictReader(content.splitlines(), dialect=dialect)
-    fieldnames = [name.strip().lower() for name in (reader.fieldnames or [])]
-
-    rows: list[dict[str, str]] = []
-    for row in reader:
-        rows.append({str(k).strip().lower(): v for k, v in row.items() if k is not None})
+    with path.open("r", encoding=encoding, newline="") as handle:
+        reader = csv.DictReader(handle)
+        fieldnames = list(reader.fieldnames or [])
+        rows = [dict(row) for row in reader]
     return rows, fieldnames
 
 

@@ -99,14 +99,3 @@ def test_loader_and_stage1_pipeline(tmp_path: Path):
 
     parsed_report = json.loads(report_path.read_text(encoding="utf-8"))
     assert parsed_report["style_distribution"]["fiction"] == 1
-
-
-def test_add_xml_paths_resolves_extensionless_metadata_path(tmp_path: Path):
-    rows = [{"path": "post1950/archive/doc1"}]
-    target = tmp_path / "post1950" / "archive"
-    target.mkdir(parents=True)
-    (target / "doc1.xml").write_text("<doc/>", encoding="utf-8")
-
-    enriched = add_xml_paths(rows, tmp_path)
-    assert enriched[0]["xml_exists"] is True
-    assert str(enriched[0]["xml_abs_path"]).endswith("doc1.xml")
