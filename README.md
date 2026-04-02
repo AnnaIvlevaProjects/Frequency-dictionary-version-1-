@@ -14,11 +14,24 @@ python -m pip install -e .
 python -m pytest
 ```
 
+## Run Stage 1
+
+```bash
+python scripts/run_full_build.py
+```
+
+Outputs are written into `output/stage1/`:
+
+- `documents_stage1.csv`
+- `problem_dates.csv`
+- `missing_xml.csv`
+- `stage1_report.json`
+
 ## Windows / PyCharm troubleshooting
 
 If you see `collected 0 items`, check the following:
 
-1. Ensure your local clone includes the `tests/` directory and `tests/test_rules.py`.
+1. Ensure your local clone includes the `tests/` directory and test files.
 2. Run tests from the repository root (where `pyproject.toml` is located).
 3. Prefer module invocation to avoid PATH issues:
 
