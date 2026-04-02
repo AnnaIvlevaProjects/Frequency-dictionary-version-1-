@@ -11,5 +11,19 @@ This repository now contains a production-oriented project skeleton for the tech
 
 ```bash
 python -m pip install -e .
-pytest
+python -m pytest
 ```
+
+## Windows / PyCharm troubleshooting
+
+If you see `collected 0 items`, check the following:
+
+1. Ensure your local clone includes the `tests/` directory and `tests/test_rules.py`.
+2. Run tests from the repository root (where `pyproject.toml` is located).
+3. Prefer module invocation to avoid PATH issues:
+
+```bash
+python -m pytest -q
+```
+
+The project config explicitly points pytest to the `tests` folder.
