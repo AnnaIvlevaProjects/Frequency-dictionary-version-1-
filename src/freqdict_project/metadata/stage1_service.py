@@ -54,43 +54,15 @@ def add_style_3(rows: list[dict[str, object]]) -> list[dict[str, object]]:
     return with_style
 
 
-def _resolve_xml_path(root: Path, rel_path: str) -> Path:
-    base = root / rel_path
-
-    # If metadata path already starts with the same folder as corpus_root (e.g.
-    # root=.../post1950 and rel_path=post1950/... ), avoid duplicate segment.
-    parts = [p for p in rel_path.split("/") if p]
-    if parts and root.name.lower() == parts[0].lower():
-        alt_rel = "/".join(parts[1:])
-        alt_base = root / alt_rel
-    else:
-        alt_base = None
-
-    candidates = [base, Path(f"{base}.xml"), Path(f"{base}.xml.gz")]
-    if alt_base is not None:
-        candidates.extend([alt_base, Path(f"{alt_base}.xml"), Path(f"{alt_base}.xml.gz")])
-
-    # If metadata points to a sibling corpus directory (e.g. rel_path starts with
-    # pre1950 while root is .../post1950), try root.parent / rel_path.
-    sibling_base = root.parent / rel_path if root.parent != root else None
-    if sibling_base is not None:
-        candidates.extend([sibling_base, Path(f"{sibling_base}.xml"), Path(f"{sibling_base}.xml.gz")])
-
-    for candidate in candidates:
-        if candidate.exists():
-            return candidate
-    return base
-
-
 def add_xml_paths(rows: list[dict[str, object]], corpus_root: str | Path) -> list[dict[str, object]]:
     root = Path(corpus_root)
     output: list[dict[str, object]] = []
     for row in rows:
         rel_path = str(row.get("path", "")).replace("\\", "/").strip("/")
-        resolved = _resolve_xml_path(root, rel_path) if rel_path else root
+        abs_path = root / rel_path
         updated = dict(row)
-        updated["xml_abs_path"] = str(resolved)
-        updated["xml_exists"] = rel_path != "" and resolved.exists()
+        updated["xml_abs_path"] = str(abs_path)
+        updated["xml_exists"] = abs_path.exists()
         updated["is_empty_path"] = rel_path == ""
         output.append(updated)
     return output
