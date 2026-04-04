@@ -13,6 +13,9 @@ nlp:
   language: "ru"
   processors: "tokenize,pos,lemma"
 
+stage2:
+  limit_docs: 100
+
 rules:
   det_to_pron: true
   normalize_yo_after_lemmatization: true
