@@ -28,6 +28,7 @@ def main() -> None:
     limit_docs = stage2_settings.get("limit_docs")
     workers = stage2_settings.get("workers", 1)
     chunksize = stage2_settings.get("chunksize", 1)
+    progress_every = stage2_settings.get("progress_every", 100)
     try:
         result = run_stage2_parallel(
             rows,
@@ -36,6 +37,7 @@ def main() -> None:
             limit_docs=limit_docs,
             workers=workers,
             chunksize=chunksize,
+            progress_every=progress_every,
         )
     except ModuleNotFoundError as exc:
         raise SystemExit("Stanza is not installed. Install stanza before running Stage 2.") from exc

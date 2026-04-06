@@ -48,6 +48,7 @@ Optional Stage 2 settings in `config/settings.yaml`:
 - `stage2.limit_docs` — limit documents for test runs
 - `stage2.workers` — number of processes (use `1` for single-process mode)
 - `stage2.chunksize` — task chunk size for multiprocessing
+- `stage2.progress_every` — print progress line every N processed documents
 
 If Stage 2 finishes too quickly with `docs_failed` close to total, first re-run with:
 
