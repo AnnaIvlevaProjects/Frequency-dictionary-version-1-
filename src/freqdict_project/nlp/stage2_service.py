@@ -6,6 +6,7 @@ import csv
 import json
 from dataclasses import dataclass
 from concurrent.futures import ProcessPoolExecutor
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -106,17 +107,17 @@ def run_stage2(stage1_rows: list[dict[str, str]], nlp_pipeline: Any, *, limit_do
     return Stage2Result(tokens=tokens, report=report)
 
 
-def _process_row_task(row: dict[str, str], language: str, processors: str) -> tuple[str, list[dict[str, Any]]]:
+def _process_row_task(row: dict[str, str], language: str, processors: str) -> tuple[str, list[dict[str, Any]], str]:
     xml_path = row.get("xml_abs_path", "")
     try:
         text = extract_clean_text(xml_path)
         if not text:
-            return "empty", []
+            return "empty", [], ""
         nlp = get_stanza_pipeline(language=language, processors=processors)
         stanza_doc = nlp(text)
-        return "processed", _build_token_rows(row, stanza_doc)
-    except Exception:
-        return "failed", []
+        return "processed", _build_token_rows(row, stanza_doc), ""
+    except Exception as exc:
+        return "failed", [], f"{type(exc).__name__}: {exc}"
 
 
 def run_stage2_parallel(
@@ -137,6 +138,7 @@ def run_stage2_parallel(
     docs_processed = 0
     docs_failed = 0
     docs_empty_text = 0
+    error_counter: Counter[str] = Counter()
 
     if workers <= 1:
         nlp = get_stanza_pipeline(language=language, processors=processors)
@@ -152,7 +154,7 @@ def run_stage2_parallel(
         )
 
     with ProcessPoolExecutor(max_workers=workers) as executor:
-        for status, row_tokens in executor.map(
+        for status, row_tokens, error_message in executor.map(
             _process_row_task,
             eligible,
             [language] * len(eligible),
@@ -166,6 +168,8 @@ def run_stage2_parallel(
                 docs_empty_text += 1
             else:
                 docs_failed += 1
+                if error_message:
+                    error_counter[error_message] += 1
 
     report = {
         "docs_total_with_xml": docs_total,
@@ -178,6 +182,7 @@ def run_stage2_parallel(
         "pron_tokens": sum(1 for t in tokens if t["pos_dict"] == "PRON"),
         "workers": workers,
         "chunksize": max(1, chunksize),
+        "failed_error_samples": [{"error": msg, "count": count} for msg, count in error_counter.most_common(5)],
     }
     return Stage2Result(tokens=tokens, report=report)
 

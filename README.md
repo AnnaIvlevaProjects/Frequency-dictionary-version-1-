@@ -49,6 +49,12 @@ Optional Stage 2 settings in `config/settings.yaml`:
 - `stage2.workers` — number of processes (use `1` for single-process mode)
 - `stage2.chunksize` — task chunk size for multiprocessing
 
+If Stage 2 finishes too quickly with `docs_failed` close to total, first re-run with:
+
+- `stage2.workers: 1`
+
+to verify single-process behavior and inspect the reported `failed_error_samples`.
+
 ## Windows / PyCharm troubleshooting
 
 If you see `collected 0 items`, check the following:

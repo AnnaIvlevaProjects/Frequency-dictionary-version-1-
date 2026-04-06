@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import sys
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
+os.environ["PYTHONPATH"] = f"{SRC}{os.pathsep}{os.environ.get('PYTHONPATH', '')}".rstrip(os.pathsep)
 
 from freqdict_project.nlp.stage2_service import load_stage1_documents, run_stage2_parallel, save_stage2_outputs
 from freqdict_project.utils.settings import load_settings
