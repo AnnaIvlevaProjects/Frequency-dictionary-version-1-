@@ -56,6 +56,28 @@ If Stage 2 finishes too quickly with `docs_failed` close to total, first re-run 
 
 to verify single-process behavior and inspect the reported `failed_error_samples`.
 
+## Run Stage 3
+
+```bash
+python scripts/run_stage3.py
+```
+
+`run_stage3.py` reads:
+
+- `output/stage2/tokens_stage2.csv`
+- `output/stage1/documents_stage1.csv`
+
+and writes:
+
+- `output/stage3/lemma_stats_global.csv`
+- `output/stage3/lemma_stats_style.csv`
+- `output/stage3/stage3_report.json`
+
+Optional Stage 3 settings in `config/settings.yaml`:
+
+- `stage3.segments_n` — number of corpus segments (default `100`)
+- `stage3.progress_every` — progress print interval in processed token rows
+
 ## Windows / PyCharm troubleshooting
 
 If you see `collected 0 items`, check the following:

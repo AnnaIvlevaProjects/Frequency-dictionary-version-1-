@@ -19,6 +19,10 @@ stage2:
   chunksize: 1
   progress_every: 100
 
+stage3:
+  segments_n: 100
+  progress_every: 500000
+
 rules:
   det_to_pron: true
   normalize_yo_after_lemmatization: true
