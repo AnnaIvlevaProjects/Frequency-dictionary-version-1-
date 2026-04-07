@@ -1,0 +1,41 @@
+paths:
+  corpus_root: "D:/Компьютерная лингвистика/НКРЯ/НКРЯ/texts/post1950"
+  metadata_csv: "D:/Компьютерная лингвистика/НКРЯ/НКРЯ/source.csv"
+  output_root: "./output"
+
+corpus:
+  year_from: 2008
+  year_to: 2022
+  segments_n: 100
+
+nlp:
+  analyzer: "stanza"
+  language: "ru"
+  processors: "tokenize,pos,lemma"
+
+stage2:
+  limit_docs: 100
+  workers: 1
+  chunksize: 1
+  progress_every: 100
+
+stage3:
+  segments_n: 100
+  progress_every: 500000
+
+rules:
+  det_to_pron: true
+  normalize_yo_after_lemmatization: true
+  split_participles_from_verbs: true
+  show_lemma_with_e: true
+  abbreviations_with_propn: true
+  service_upos: ["ADP", "CCONJ", "SCONJ", "PART", "AUX"]
+
+limits:
+  alphabetic_limit: 50000
+  frequency_limit: 20000
+  style_limit: 5000
+  significant_limit: 1000
+  nouns_limit: 1000
+  verbs_limit: 1000
+  adjectives_limit: 1000
