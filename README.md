@@ -77,6 +77,8 @@ Optional Stage 3 settings in `config/settings.yaml`:
 
 - `stage3.segments_n` — number of corpus segments (default `100`)
 - `stage3.progress_every` — progress print interval in processed token rows
+- `stage3.lexical_only` — exclude technical/non-lexical UPOS from totals and IPM denominators
+- `stage3.excluded_upos` — UPOS tags to exclude when `lexical_only=true` (default `["PUNCT", "SYM", "X"]`)
 
 ## Windows / PyCharm troubleshooting
 

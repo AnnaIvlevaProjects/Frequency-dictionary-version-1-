@@ -22,6 +22,8 @@ stage2:
 stage3:
   segments_n: 100
   progress_every: 500000
+  lexical_only: false
+  excluded_upos: ["PUNCT", "SYM", "X"]
 
 rules:
   det_to_pron: true

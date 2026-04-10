@@ -51,9 +51,12 @@ def run_stage3_aggregation(
     *,
     segments_n: int = 100,
     progress_every: int = 500_000,
+    lexical_only: bool = False,
+    excluded_upos: list[str] | None = None,
 ) -> Stage3Result:
     tokens_path = Path(tokens_csv)
     started_pass1 = time.time()
+    excluded = {tag.upper() for tag in (excluded_upos or ["PUNCT", "SYM", "X"])}
 
     global_freq: dict[tuple[str, str], int] = {}
     key_doc_hits: dict[tuple[str, str], set[str]] = {}
@@ -67,6 +70,9 @@ def run_stage3_aggregation(
         for row in reader:
             token_rows_count += 1
             _print_progress("Stage3-pass1", token_rows_count, started_pass1, progress_every)
+            pos_ud = str(row.get("pos_ud", "")).upper()
+            if lexical_only and pos_ud in excluded:
+                continue
 
             key = _token_key(row)
             doc_path = row.get("path", "")
@@ -101,6 +107,9 @@ def run_stage3_aggregation(
         for row in reader:
             token_rows_count_pass2 += 1
             _print_progress("Stage3-pass2", token_rows_count_pass2, started_pass2, progress_every)
+            pos_ud = str(row.get("pos_ud", "")).upper()
+            if lexical_only and pos_ud in excluded:
+                continue
 
             key = _token_key(row)
             doc_path = row.get("path", "")
@@ -153,6 +162,8 @@ def run_stage3_aggregation(
         "lemmas_total": len(global_rows),
         "styles_total": len(style_totals),
         "segments_n": segments_n,
+        "lexical_only": lexical_only,
+        "excluded_upos": sorted(excluded),
     }
     return Stage3Result(global_rows=global_rows, style_rows=style_rows, report=report)
 
