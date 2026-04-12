@@ -34,7 +34,7 @@ def _write_global(path: Path) -> None:
             "lemma_display": "и",
             "pos_dict": "SERVICE",
             "freq": "10",
-            "ipm": "100.0",
+            "ipm": "0.1",
             "doc_hits": "2",
             "doc_percent": "100.0",
             "R": "2",
@@ -69,18 +69,19 @@ def test_build_stage4_dictionaries(tmp_path: Path):
         global_csv,
         style_csv,
         tmp_path,
-        alphabetic_limit=2,
-        frequency_limit=2,
+        alphabetic_ipm_min=0.4,
+        frequency_ipm_min=2.6,
         style_limit=2,
     )
 
     stage4 = tmp_path / "stage4"
     assert (stage4 / "dictionary_alphabetic_50000.csv").exists()
     assert (stage4 / "dictionary_frequency_20000.csv").exists()
-    assert (stage4 / "dictionary_new_lemmas.csv").exists()
+    assert (stage4 / "dictionary_low_frequency_lemmas.csv").exists()
     assert (stage4 / "dictionary_style_fiction.csv").exists()
     assert (stage4 / "dictionary_pos_nouns.csv").exists()
     assert (stage4 / "stage4_report.csv").exists()
 
     assert result.report["alphabetic_rows"] == 2
     assert result.report["frequency_rows"] == 2
+    assert result.report["low_frequency_rows"] == 1

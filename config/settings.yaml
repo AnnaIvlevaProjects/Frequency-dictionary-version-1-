@@ -26,8 +26,8 @@ stage3:
   excluded_upos: ["PUNCT", "SYM", "X"]
 
 stage4:
-  alphabetic_limit: 50000
-  frequency_limit: 20000
+  alphabetic_ipm_min: 0.4
+  frequency_ipm_min: 2.6
   style_limit: 5000
 
 rules:

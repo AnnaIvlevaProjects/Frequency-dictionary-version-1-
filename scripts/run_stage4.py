@@ -32,8 +32,8 @@ def main() -> None:
         global_csv,
         style_csv,
         output_root,
-        alphabetic_limit=stage4_settings.get("alphabetic_limit", limits.get("alphabetic_limit", 50_000)),
-        frequency_limit=stage4_settings.get("frequency_limit", limits.get("frequency_limit", 20_000)),
+        alphabetic_ipm_min=stage4_settings.get("alphabetic_ipm_min", 0.4),
+        frequency_ipm_min=stage4_settings.get("frequency_ipm_min", 2.6),
         style_limit=stage4_settings.get("style_limit", limits.get("style_limit", 5_000)),
     )
 

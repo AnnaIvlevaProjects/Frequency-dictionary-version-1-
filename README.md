@@ -90,12 +90,18 @@ python scripts/run_stage4.py
 
 - `dictionary_alphabetic_50000.csv`
 - `dictionary_frequency_20000.csv`
-- `dictionary_new_lemmas.csv`
+- `dictionary_low_frequency_lemmas.csv`
 - `dictionary_style_fiction.csv`
 - `dictionary_style_publicistics.csv`
 - `dictionary_style_nonfiction_other.csv`
 - `dictionary_pos_*.csv`
 - `stage4_report.csv`
+
+Stage 4 thresholds:
+
+- alphabetic dictionary includes lemmas with `ipm >= 0.4`
+- frequency dictionary includes lemmas with `ipm >= 2.6`
+- lemmas with `ipm < 0.4` are exported to `dictionary_low_frequency_lemmas.csv`
 
 ## Windows / PyCharm troubleshooting
 

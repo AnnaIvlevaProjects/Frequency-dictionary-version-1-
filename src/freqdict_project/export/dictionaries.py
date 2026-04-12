@@ -63,22 +63,17 @@ def build_stage4_dictionaries(
     style_csv: str | Path,
     output_root: str | Path,
     *,
-    alphabetic_limit: int = 50_000,
-    frequency_limit: int = 20_000,
+    alphabetic_ipm_min: float = 0.4,
+    frequency_ipm_min: float = 2.6,
     style_limit: int = 5_000,
 ) -> Stage4Result:
     global_rows = _read_csv(global_csv)
     style_rows = _read_csv(style_csv)
 
-    ranked = _global_ranked(global_rows)
     by_freq = _global_by_freq(global_rows)
-
-    top_alphabetic_source = ranked[:alphabetic_limit]
-    alphabetic = _sort_alpha(top_alphabetic_source)
-    frequency = by_freq[:frequency_limit]
-
-    top_key_set = {(row["lemma_display"], row["pos_dict"]) for row in top_alphabetic_source}
-    new_lemmas = _sort_alpha([row for row in ranked if (row["lemma_display"], row["pos_dict"]) not in top_key_set])
+    alphabetic = _sort_alpha([row for row in global_rows if _to_float(row.get("ipm", "0")) >= alphabetic_ipm_min])
+    frequency = [row for row in by_freq if _to_float(row.get("ipm", "0")) >= frequency_ipm_min]
+    low_frequency = _sort_alpha([row for row in global_rows if _to_float(row.get("ipm", "0")) < alphabetic_ipm_min])
 
     styles = ["fiction", "publicistics", "nonfiction_other"]
     style_files: dict[str, list[dict[str, str]]] = {}
@@ -108,7 +103,7 @@ def build_stage4_dictionaries(
     main_files = {
         "dictionary_alphabetic_50000.csv": alphabetic,
         "dictionary_frequency_20000.csv": frequency,
-        "dictionary_new_lemmas.csv": new_lemmas,
+        "dictionary_low_frequency_lemmas.csv": low_frequency,
     }
     for filename, rows in main_files.items():
         path = out / filename
@@ -130,7 +125,9 @@ def build_stage4_dictionaries(
         "style_rows": len(style_rows),
         "alphabetic_rows": len(alphabetic),
         "frequency_rows": len(frequency),
-        "new_lemmas_rows": len(new_lemmas),
+        "low_frequency_rows": len(low_frequency),
+        "alphabetic_ipm_min": alphabetic_ipm_min,
+        "frequency_ipm_min": frequency_ipm_min,
         "files_written": len(written),
     }
     _write_csv(out / "stage4_report.csv", [report])
