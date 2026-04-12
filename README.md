@@ -80,6 +80,23 @@ Optional Stage 3 settings in `config/settings.yaml`:
 - `stage3.lexical_only` — exclude technical/non-lexical UPOS from totals and IPM denominators
 - `stage3.excluded_upos` — UPOS tags to exclude when `lexical_only=true` (default `["PUNCT", "SYM", "X"]`)
 
+## Run Stage 4
+
+```bash
+python scripts/run_stage4.py
+```
+
+`run_stage4.py` reads Stage 3 outputs and writes dictionary CSVs into `output/stage4/`, including:
+
+- `dictionary_alphabetic_50000.csv`
+- `dictionary_frequency_20000.csv`
+- `dictionary_new_lemmas.csv`
+- `dictionary_style_fiction.csv`
+- `dictionary_style_publicistics.csv`
+- `dictionary_style_nonfiction_other.csv`
+- `dictionary_pos_*.csv`
+- `stage4_report.csv`
+
 ## Windows / PyCharm troubleshooting
 
 If you see `collected 0 items`, check the following:

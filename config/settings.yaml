@@ -25,6 +25,11 @@ stage3:
   lexical_only: false
   excluded_upos: ["PUNCT", "SYM", "X"]
 
+stage4:
+  alphabetic_limit: 50000
+  frequency_limit: 20000
+  style_limit: 5000
+
 rules:
   det_to_pron: true
   normalize_yo_after_lemmatization: true
