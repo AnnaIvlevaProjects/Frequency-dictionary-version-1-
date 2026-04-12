@@ -14,6 +14,20 @@ from freqdict_project.export.dictionaries import build_stage4_dictionaries
 from freqdict_project.utils.settings import load_settings
 
 
+def _to_float(value, default: float) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _to_int(value, default: int) -> int:
+    try:
+        return int(float(value))
+    except (TypeError, ValueError):
+        return default
+
+
 def main() -> None:
     settings = load_settings(ROOT / "config" / "settings.yaml")
     output_root = Path(settings["paths"]["output_root"])
@@ -32,9 +46,9 @@ def main() -> None:
         global_csv,
         style_csv,
         output_root,
-        alphabetic_ipm_min=stage4_settings.get("alphabetic_ipm_min", 0.4),
-        frequency_ipm_min=stage4_settings.get("frequency_ipm_min", 2.6),
-        style_limit=stage4_settings.get("style_limit", limits.get("style_limit", 5_000)),
+        alphabetic_ipm_min=_to_float(stage4_settings.get("alphabetic_ipm_min", 0.4), 0.4),
+        frequency_ipm_min=_to_float(stage4_settings.get("frequency_ipm_min", 2.6), 2.6),
+        style_limit=_to_int(stage4_settings.get("style_limit", limits.get("style_limit", 5_000)), 5_000),
     )
 
     print("Stage 4 complete")
