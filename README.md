@@ -114,13 +114,27 @@ python scripts/run_stage5.py
 `run_stage5.py` reads:
 
 - `output/stage2/tokens_stage2.csv`
+- `output/stage3/lemma_stats_global.csv`
+- `output/stage3/lemma_stats_style.csv`
 
 and writes:
 
 - `output/stage5/dictionary_wordforms_alphabetic_ipm5.csv`
+- `output/stage5/dictionary_style_fiction_5000.csv`
+- `output/stage5/dictionary_style_publicistics_5000.csv`
+- `output/stage5/dictionary_style_nonfiction_other_5000.csv`
+- `output/stage5/dictionary_significant_fiction_1000.csv`
+- `output/stage5/dictionary_significant_publicistics_1000.csv`
+- `output/stage5/dictionary_significant_nonfiction_other_1000.csv`
+- `output/stage5/stage5_dictionaries.xlsx`
 - `output/stage5/stage5_report.csv`
 
-Stage 5 uses the direct Stage 2 token forms (без дополнительного консенсус-слоя) and keeps capitalization variants separately: `lower` / `higher`.
+Stage 5 uses direct Stage 2 token forms and Stage 3 aggregates (без дополнительного консенсус-слоя), builds:
+
+- стилевые словари (top N по `ipm`),
+- словари значимых слов на основе `log-likelihood`,
+- Excel-книгу со всеми словарями,
+- словарь словоформ с раздельной капитализацией `lower` / `higher`.
 
 ## Windows / PyCharm troubleshooting
 
