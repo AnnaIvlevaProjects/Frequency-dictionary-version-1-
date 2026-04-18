@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 from dataclasses import dataclass
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -58,22 +59,65 @@ def _sort_alpha(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(rows, key=lambda row: (str(row.get("lemma_display", "")).lower(), str(row.get("pos_dict", ""))))
 
 
+def _capitalization_variant(surface: str) -> str:
+    for ch in surface:
+        if ch.isalpha():
+            return "higher" if ch.isupper() else "lower"
+    return "lower"
+
+
+def _wordforms_alphabetic_by_ipm(tokens_rows: list[dict[str, str]], *, ipm_min: float) -> list[dict[str, Any]]:
+    normalized: list[tuple[str, str]] = []
+    for row in tokens_rows:
+        surface = str(row.get("surface", "")).strip()
+        if not surface:
+            continue
+        if not any(ch.isalpha() for ch in surface):
+            continue
+        capitalization = _capitalization_variant(surface)
+        normalized.append((surface, capitalization))
+
+    total = len(normalized)
+    if total <= 0:
+        return []
+
+    counts: Counter[tuple[str, str]] = Counter(normalized)
+    out: list[dict[str, Any]] = []
+    for (surface, capitalization), count in counts.items():
+        ipm = (count / total) * 1_000_000
+        if ipm < ipm_min:
+            continue
+        out.append(
+            {
+                "Словоформа": surface,
+                "Частота (ipm)": round(ipm, 6),
+                "Капитализация": capitalization,
+            }
+        )
+    out.sort(key=lambda row: (str(row["Словоформа"]).lower(), str(row["Капитализация"])))
+    return out
+
+
 def build_stage4_dictionaries(
     global_csv: str | Path,
     style_csv: str | Path,
     output_root: str | Path,
     *,
+    stage2_tokens_csv: str | Path | None = None,
     alphabetic_ipm_min: float = 0.4,
     frequency_ipm_min: float = 2.6,
     style_limit: int = 5_000,
+    wordform_ipm_min: float = 5.0,
 ) -> Stage4Result:
     global_rows = _read_csv(global_csv)
     style_rows = _read_csv(style_csv)
+    tokens_rows = _read_csv(stage2_tokens_csv) if stage2_tokens_csv else []
 
     by_freq = _global_by_freq(global_rows)
     alphabetic = _sort_alpha([row for row in global_rows if _to_float(row.get("ipm", "0")) >= alphabetic_ipm_min])
     frequency = [row for row in by_freq if _to_float(row.get("ipm", "0")) >= frequency_ipm_min]
     low_frequency = _sort_alpha([row for row in global_rows if _to_float(row.get("ipm", "0")) < alphabetic_ipm_min])
+    wordforms_alphabetic = _wordforms_alphabetic_by_ipm(tokens_rows, ipm_min=wordform_ipm_min)
 
     styles = ["fiction", "publicistics", "nonfiction_other"]
     style_files: dict[str, list[dict[str, str]]] = {}
@@ -104,6 +148,7 @@ def build_stage4_dictionaries(
         "dictionary_alphabetic_50000.csv": alphabetic,
         "dictionary_frequency_20000.csv": frequency,
         "dictionary_low_frequency_lemmas.csv": low_frequency,
+        "dictionary_wordforms_alphabetic_ipm5.csv": wordforms_alphabetic,
     }
     for filename, rows in main_files.items():
         path = out / filename
@@ -126,8 +171,10 @@ def build_stage4_dictionaries(
         "alphabetic_rows": len(alphabetic),
         "frequency_rows": len(frequency),
         "low_frequency_rows": len(low_frequency),
+        "wordforms_alphabetic_rows": len(wordforms_alphabetic),
         "alphabetic_ipm_min": alphabetic_ipm_min,
         "frequency_ipm_min": frequency_ipm_min,
+        "wordform_ipm_min": wordform_ipm_min,
         "files_written": len(written),
     }
     _write_csv(out / "stage4_report.csv", [report])

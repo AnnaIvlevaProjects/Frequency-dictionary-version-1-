@@ -91,6 +91,7 @@ python scripts/run_stage4.py
 - `dictionary_alphabetic_50000.csv`
 - `dictionary_frequency_20000.csv`
 - `dictionary_low_frequency_lemmas.csv`
+- `dictionary_wordforms_alphabetic_ipm5.csv`
 - `dictionary_style_fiction.csv`
 - `dictionary_style_publicistics.csv`
 - `dictionary_style_nonfiction_other.csv`
@@ -102,6 +103,7 @@ Stage 4 thresholds:
 - alphabetic dictionary includes lemmas with `ipm >= 0.4`
 - frequency dictionary includes lemmas with `ipm >= 2.6`
 - lemmas with `ipm < 0.4` are exported to `dictionary_low_frequency_lemmas.csv`
+- wordform alphabetic list includes wordforms with `ipm >= 5.0` and columns `Словоформа`, `Частота (ipm)`, `Капитализация` (`lower` / `higher`)
 
 ## Windows / PyCharm troubleshooting
 

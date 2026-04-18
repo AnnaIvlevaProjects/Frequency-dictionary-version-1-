@@ -59,25 +59,45 @@ def _write_style(path: Path) -> None:
         writer.writerows(rows)
 
 
+def _write_stage2_tokens(path: Path) -> None:
+    rows = [
+        {"surface": "Дом"},
+        {"surface": "дом"},
+        {"surface": "дом"},
+        {"surface": "дом"},
+        {"surface": "и"},
+        {"surface": ","},
+    ]
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(rows)
+
+
 def test_build_stage4_dictionaries(tmp_path: Path):
     global_csv = tmp_path / "lemma_stats_global.csv"
     style_csv = tmp_path / "lemma_stats_style.csv"
+    tokens_csv = tmp_path / "tokens_stage2.csv"
     _write_global(global_csv)
     _write_style(style_csv)
+    _write_stage2_tokens(tokens_csv)
 
     result = build_stage4_dictionaries(
         global_csv,
         style_csv,
         tmp_path,
+        stage2_tokens_csv=tokens_csv,
         alphabetic_ipm_min=0.4,
         frequency_ipm_min=2.6,
         style_limit=2,
+        wordform_ipm_min=5.0,
     )
 
     stage4 = tmp_path / "stage4"
     assert (stage4 / "dictionary_alphabetic_50000.csv").exists()
     assert (stage4 / "dictionary_frequency_20000.csv").exists()
     assert (stage4 / "dictionary_low_frequency_lemmas.csv").exists()
+    assert (stage4 / "dictionary_wordforms_alphabetic_ipm5.csv").exists()
     assert (stage4 / "dictionary_style_fiction.csv").exists()
     assert (stage4 / "dictionary_pos_nouns.csv").exists()
     assert (stage4 / "stage4_report.csv").exists()
@@ -85,3 +105,13 @@ def test_build_stage4_dictionaries(tmp_path: Path):
     assert result.report["alphabetic_rows"] == 2
     assert result.report["frequency_rows"] == 2
     assert result.report["low_frequency_rows"] == 1
+    assert result.report["wordforms_alphabetic_rows"] == 3
+
+    with (stage4 / "dictionary_wordforms_alphabetic_ipm5.csv").open("r", encoding="utf-8", newline="") as handle:
+        rows = [dict(row) for row in csv.DictReader(handle)]
+
+    assert rows == [
+        {"Словоформа": "Дом", "Частота (ipm)": "200000.0", "Капитализация": "higher"},
+        {"Словоформа": "дом", "Частота (ipm)": "600000.0", "Капитализация": "lower"},
+        {"Словоформа": "и", "Частота (ipm)": "200000.0", "Капитализация": "lower"},
+    ]

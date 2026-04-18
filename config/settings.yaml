@@ -29,6 +29,7 @@ stage4:
   alphabetic_ipm_min: 0.4
   frequency_ipm_min: 2.6
   style_limit: 5000
+  wordform_ipm_min: 5.0
 
 rules:
   det_to_pron: true

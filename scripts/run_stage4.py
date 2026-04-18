@@ -34,6 +34,7 @@ def main() -> None:
 
     global_csv = output_root / "stage3" / "lemma_stats_global.csv"
     style_csv = output_root / "stage3" / "lemma_stats_style.csv"
+    stage2_tokens_csv = output_root / "stage2" / "tokens_stage2.csv"
 
     if not global_csv.exists():
         raise SystemExit(f"Stage 3 global stats not found: {global_csv}")
@@ -46,9 +47,11 @@ def main() -> None:
         global_csv,
         style_csv,
         output_root,
+        stage2_tokens_csv=stage2_tokens_csv if stage2_tokens_csv.exists() else None,
         alphabetic_ipm_min=_to_float(stage4_settings.get("alphabetic_ipm_min", 0.4), 0.4),
         frequency_ipm_min=_to_float(stage4_settings.get("frequency_ipm_min", 2.6), 2.6),
         style_limit=_to_int(stage4_settings.get("style_limit", limits.get("style_limit", 5_000)), 5_000),
+        wordform_ipm_min=_to_float(stage4_settings.get("wordform_ipm_min", 5.0), 5.0),
     )
 
     print("Stage 4 complete")
