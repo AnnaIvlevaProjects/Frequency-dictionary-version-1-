@@ -105,6 +105,23 @@ Stage 4 thresholds:
 - lemmas with `ipm < 0.4` are exported to `dictionary_low_frequency_lemmas.csv`
 - wordform alphabetic list includes wordforms with `ipm >= 5.0` and columns `Словоформа`, `Частота (ipm)`, `Капитализация` (`lower` / `higher`)
 
+## Run Stage 5 (без консенсуса)
+
+```bash
+python scripts/run_stage5.py
+```
+
+`run_stage5.py` reads:
+
+- `output/stage2/tokens_stage2.csv`
+
+and writes:
+
+- `output/stage5/dictionary_wordforms_alphabetic_ipm5.csv`
+- `output/stage5/stage5_report.csv`
+
+Stage 5 uses the direct Stage 2 token forms (без дополнительного консенсус-слоя) and keeps capitalization variants separately: `lower` / `higher`.
+
 ## Windows / PyCharm troubleshooting
 
 If you see `collected 0 items`, check the following:
