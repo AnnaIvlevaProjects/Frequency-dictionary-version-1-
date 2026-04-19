@@ -1,0 +1,12 @@
+{
+  "docs_total_with_xml": 11232,
+  "docs_processed": 11232,
+  "docs_failed": 0,
+  "docs_empty_text": 0,
+  "tokens_total": 43504415,
+  "propn_tokens": 1877275,
+  "participle_tokens": 634932,
+  "pron_tokens": 3308890,
+  "workers": 1,
+  "chunksize": 1
+}

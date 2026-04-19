@@ -1,0 +1,13 @@
+{
+  "tokens_total": 33643152,
+  "documents_total": 11232,
+  "lemmas_total": 456768,
+  "styles_total": 3,
+  "segments_n": 100,
+  "lexical_only": true,
+  "excluded_upos": [
+    "PUNCT",
+    "SYM",
+    "X"
+  ]
+}
