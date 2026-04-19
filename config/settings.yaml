@@ -13,6 +13,24 @@ nlp:
   language: "ru"
   processors: "tokenize,pos,lemma"
 
+stage2:
+  limit_docs: 100
+  workers: 1
+  chunksize: 1
+  progress_every: 100
+
+stage3:
+  segments_n: 100
+  progress_every: 500000
+  lexical_only: false
+  excluded_upos: ["PUNCT", "SYM", "X"]
+
+stage4:
+  alphabetic_ipm_min: 0.4
+  frequency_ipm_min: 2.6
+  style_limit: 5000
+  wordform_ipm_min: 5.0
+
 rules:
   det_to_pron: true
   normalize_yo_after_lemmatization: true

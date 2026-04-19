@@ -1,11 +1,11 @@
 """Year extraction rules for NКРЯ metadata."""
 
 from __future__ import annotations
+
+import re
 from dataclasses import dataclass
 from typing import Any
-import re
 
-YEAR_ANY_RE = re.compile(r"\b(1[7-9]\d{2}|20\d{2}|2100)\b")
 YEAR_RE = re.compile(r"(19|20)\d{2}")
 
 
@@ -14,8 +14,6 @@ class YearParseResult:
     year: int | None
     source: str
     problem: str | None = None
-
-
 
 
 def _extract_year_candidate(value: str) -> int | None:
