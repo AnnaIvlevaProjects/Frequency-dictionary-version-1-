@@ -17,17 +17,37 @@ class YearParseResult:
 
 
 def _extract_year_candidate(value: str) -> int | None:
-    if "|" in value:
-        value = value.split("|", 1)[0]
-    match = YEAR_RE.search(value)
-    return int(match.group(0)) if match else None
+    if value is None:
+        return None
+
+    date_str = str(value).strip()
+    if not date_str or date_str.lower() in {"nan", "none", "null"}:
+        return None
+
+    # 1) приоритет: часть до '|'
+    if "|" in date_str:
+        left = date_str.split("|", 1)[0].strip()
+        if left.isdigit() and len(left) == 4:
+            y = int(left)
+            if 1700 <= y <= 2100:
+                return y
+        m = YEAR_ANY_RE.search(left)
+        if m:
+            return int(m.group(0))
+
+    # 2) fallback: найти год в любой части строки created
+    m = YEAR_ANY_RE.search(date_str)
+    if m:
+        return int(m.group(0))
+
+    return None
 
 
 def parse_document_year(
     created: Any,
     publ_year: Any,
     *,
-    fallback_to_publ_year: bool = True,
+    fallback_to_publ_year: bool = False,
 ) -> YearParseResult:
     """Parse document year using primary `created` and optional fallback `publ_year`."""
 
